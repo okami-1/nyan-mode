@@ -49,7 +49,7 @@
       (nyan-mode -1)
       (nyan-mode 1))))
 
-(defcustom nyan-animation-frame-interval 0.2
+(defcustom nyan-animation-frame-interval 0.1
   "Number of seconds between animation frames."
   :set (lambda (sym val)
          (set-default sym val)
@@ -113,17 +113,17 @@ This can be t or nil."
 
 (defconst +nyan-cat-size+ 3)
 
-(defconst +nyan-cat-image+ (concat +nyan-directory+ "img/nyan.xpm"))
-(defconst +nyan-rainbow-image+ (concat +nyan-directory+ "img/rainbow.xpm"))
-(defconst +nyan-outerspace-image+ (concat +nyan-directory+ "img/outerspace.xpm"))
+(defconst +nyan-cat-image+ (concat +nyan-directory+ "img/rd/rd.xpm"))
+(defconst +nyan-rainbow-image+ (concat +nyan-directory+ "img/rd/rainbow.xpm"))
+(defconst +nyan-outerspace-image+ (concat +nyan-directory+ "img/rd/bg.xpm"))
 
 ;;; Load images of Nyan Cat an it's rainbow.
 (defvar nyan-cat-image (create-image +nyan-cat-image+ 'xpm nil :ascent 'center))
 
 (defvar nyan-animation-frames (mapcar (lambda (id)
-                                        (create-image (concat +nyan-directory+ (format "img/nyan-frame-%d.xpm" id))
-                                                      'xpm nil :ascent 95))
-                                      '(1 2 3 4 5 6)))
+                                        (create-image (concat +nyan-directory+ (format "img/rd/rd-frame-%d.xpm" id))
+                                                      'xpm nil :ascent 'center))
+                                      '(1 2 3 4 5 6 7 8)))
 (defvar nyan-current-frame 0)
 
 (defconst +catface+ [
@@ -139,13 +139,23 @@ This can be t or nil."
          "(　　＞三ワ＜　)" "(　＞ワ三＜　　)"]])
 
 (defun nyan-swich-anim-frame ()
-  (setq nyan-current-frame (% (+ 1 nyan-current-frame) 6))
+  (setq nyan-current-frame (% (+ 1 nyan-current-frame) 8))
   (redraw-modeline))
 
 (defun nyan-get-anim-frame ()
+  (unless nyan-animate-nyancat
+    (setq nyan-current-frame
+          (min (round (/ (* (round (* 100
+                                      (/ (- (float (point))
+                                            (float (point-min)))
+                                         (float (point-max)))))
+                            6)
+                         100)) (- 8 1))
+          ))
   (if nyan-animate-nyancat
       (nth nyan-current-frame nyan-animation-frames)
     nyan-cat-image))
+  ;; (nth nyan-current-frame nyan-animation-frames))
 
 (defun nyan-wavy-rainbow-ascent (number)
   (if nyan-animate-nyancat
@@ -153,7 +163,7 @@ This can be t or nil."
                   (* 3 (abs (- (/ 6 2)
                                (% (+ number nyan-current-frame)
                                   6))))))
-      (if (zerop (% number 2)) 80 'center)))
+      (if (zerop (% number 2)) 'center)))
 
 (defun nyan-number-of-rainbows ()
   (round (/ (* (round (* 100
@@ -187,11 +197,11 @@ This can be t or nil."
                                                'display (create-image +nyan-rainbow-image+ 'xpm nil :ascent (or (and nyan-wavy-trail
 
                                                                                                                      (nyan-wavy-rainbow-ascent number))
-                                                                                                                (if nyan-animate-nyancat 95 'center)))))))
+                                                                                                                (if nyan-animate-nyancat 'center 'center)))))))
     (dotimes (number outerspaces)
       (setq outerspace-string (concat outerspace-string
                                       (propertize "-"
-                                                  'display (create-image +nyan-outerspace-image+ 'xpm nil :ascent (if nyan-animate-nyancat 95 'center))))))
+                                                  'display (create-image +nyan-outerspace-image+ 'xpm nil :ascent (if nyan-animate-nyancat 'center 'center))))))
     ;; Compute Nyan Cat string.
     (concat rainbow-string
             nyancat-string

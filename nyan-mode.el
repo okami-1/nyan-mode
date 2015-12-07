@@ -142,7 +142,7 @@ This can be t or nil."
 
 (defvar nyan-animation-frames (if (image-type-available-p 'xpm)
                                 (mapcar (lambda (id)
-                                          (create-image (concat +nyan-directory+ (format "img/nyan-frame-%d.xpm" id))
+                                          (create-image (concat +nyan-directory+ (format "img/rd/rd-frame-%d.xpm" id))
                                                         'xpm nil :ascent 'center))
                                         '(1 2 3 4 5 6 7 8))))
 
